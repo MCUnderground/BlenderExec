@@ -4,25 +4,26 @@
   "description": "Run Python code sent from VS Code.",
   "icon": "images/icon.png",
   "publisher": "MCUnderground",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "MCUnderground",
   "engines": {
     "vscode": "^1.60.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MCUnderground/kritaexec"
+    "url": "https://github.com/MCUnderground/blenderexec"
   },
   "bugs": {
-    "url": "https://github.com/MCUnderground/kritaexec/issues"
+    "url": "https://github.com/MCUnderground/blenderexec/issues"
   },
-  "homepage": "https://github.com/MCUnderground/kritaexec#readme",
+  "homepage": "https://github.com/MCUnderground/blenderexec#readme",
   "categories": ["Other"],
   "main": "./out/extension.js",
   "activationEvents": [
     "onCommand:blenderexec.selectInstance",
     "onCommand:blenderexec.sendFullFile",
-    "onCommand:blenderexec.sendSelection"
+    "onCommand:blenderexec.sendSelection",
+    "onCommand:blenderexec.enableBlenderStubs"
   ],
   "contributes": {
     "commands": [
@@ -37,6 +38,10 @@
       {
         "command": "blenderexec.sendSelection",
         "title": "Send Selection to Blender"
+      },
+      {
+        "command": "blenderexec.enableBlenderStubs",
+        "title": "Enable Blender API IntelliSense"
       }
     ],
     "keybindings": [
@@ -53,6 +58,11 @@
       {
         "command": "blenderexec.selectInstance",
         "key": "ctrl+alt+e",
+        "when": "editorTextFocus && editorLangId == python"
+      },
+      {
+        "command": "blenderexec.enableBlenderStubs",
+        "key": "ctrl+alt+shift+b",
         "when": "editorTextFocus && editorLangId == python"
       }
     ]

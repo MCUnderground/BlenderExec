@@ -3,6 +3,7 @@ import * as net from 'net';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { registerEnableStubs } from './commands/enableStubs';
 
 let selectedInstance: { host: string, port: number } | null = null;
 
@@ -95,6 +96,8 @@ async function sendSelectionCommand() {
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('BlenderExec extension is now active!');
+    const stubPath = path.join(context.extensionPath, 'blender-lang');
+    registerEnableStubs(context, stubPath);
 
     context.subscriptions.push(vscode.commands.registerCommand('blenderexec.selectInstance', selectInstanceCommand));
     context.subscriptions.push(vscode.commands.registerCommand('blenderexec.sendFullFile', sendFullFileCommand));

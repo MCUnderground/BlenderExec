@@ -41,6 +41,7 @@ const net = __importStar(require("net"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const os = __importStar(require("os"));
+const enableStubs_1 = require("./commands/enableStubs");
 let selectedInstance = null;
 function sendCodeToBlender(code) {
     return new Promise((resolve, reject) => {
@@ -105,6 +106,8 @@ async function sendSelectionCommand() {
 }
 function activate(context) {
     console.log('BlenderExec extension is now active!');
+    const stubPath = path.join(context.extensionPath, 'blender-lang');
+    (0, enableStubs_1.registerEnableStubs)(context, stubPath);
     context.subscriptions.push(vscode.commands.registerCommand('blenderexec.selectInstance', selectInstanceCommand));
     context.subscriptions.push(vscode.commands.registerCommand('blenderexec.sendFullFile', sendFullFileCommand));
     context.subscriptions.push(vscode.commands.registerCommand('blenderexec.sendSelection', sendSelectionCommand));
