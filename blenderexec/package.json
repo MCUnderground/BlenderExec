@@ -1,0 +1,72 @@
+{
+  "name": "blenderexec",
+  "displayName": "BlenderExec",
+  "description": "Run Python code sent from VS Code.",
+  "icon": "images/icon.png",
+  "publisher": "MCUnderground",
+  "version": "1.0.0",
+  "author": "MCUnderground",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MCUnderground/kritaexec"
+  },
+  "bugs": {
+    "url": "https://github.com/MCUnderground/kritaexec/issues"
+  },
+  "homepage": "https://github.com/MCUnderground/kritaexec#readme",
+  "categories": ["Other"],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onCommand:blenderexec.selectInstance",
+    "onCommand:blenderexec.sendFullFile",
+    "onCommand:blenderexec.sendSelection"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "blenderexec.selectInstance",
+        "title": "Select Blender Instance"
+      },
+      {
+        "command": "blenderexec.sendFullFile",
+        "title": "Send Full File to Blender"
+      },
+      {
+        "command": "blenderexec.sendSelection",
+        "title": "Send Selection to Blender"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "blenderexec.sendFullFile",
+        "key": "ctrl+shift+e",
+        "when": "editorTextFocus && editorLangId == python"
+      },
+      {
+        "command": "blenderexec.sendSelection",
+        "key": "ctrl+shift+s",
+        "when": "editorTextFocus && editorLangId == python"
+      },
+      {
+        "command": "blenderexec.selectInstance",
+        "key": "ctrl+alt+e",
+        "when": "editorTextFocus && editorLangId == python"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.60.0",
+    "mocha": "^11.7.1",
+    "typescript": "^5.9.2"
+  }
+}
