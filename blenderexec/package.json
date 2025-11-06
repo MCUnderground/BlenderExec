@@ -4,7 +4,7 @@
   "description": "Run Python code sent from VS Code.",
   "icon": "images/icon.png",
   "publisher": "MCUnderground",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "MCUnderground",
   "engines": {
     "vscode": "^1.60.0"

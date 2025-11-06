@@ -50,6 +50,15 @@ BlenderExec provides syntax highlighting, snippets, and **full auto-completion**
 
 ## 🚀 Workflow
 
+### 0. Install Blender Addon (Required)
+
+Before using script execution features, install the **BlenderExec Bridge** addon in Blender:
+
+1. Download: [BlenderExec.Bridge.Addon.zip](https://github.com/MCUnderground/BlenderExec/releases/latest/download/BlenderExec.Bridge.Addon.zip)
+2. In Blender: `Edit` → `Preferences` → `Add-ons` → `Install...` → Select the zip → Enable addon
+
+---
+
 ### 1. Enable Blender IntelliSense
 
 Run **`BlenderExec: Enable Blender API IntelliSense`** (`Ctrl+Alt+Shift+B`).  
@@ -94,6 +103,20 @@ Perfect for rapid testing and iterative development.
 - **Blender** installed on your system (any recent version supported by fake-bpy-module).  
 - **VS Code 1.60.0+**  
 - **Python extension (Pylance)** for IntelliSense.  
+- **BlenderExec Bridge Addon** installed in Blender for script execution.
+
+### Installing the Blender Addon
+
+To send code from VS Code to Blender, you need to install the BlenderExec Bridge addon:
+
+1. **Download** the addon: [BlenderExec.Bridge.Addon.zip](https://github.com/MCUnderground/BlenderExec/releases/latest/download/BlenderExec.Bridge.Addon.zip)
+2. **Install** in Blender:
+   - Open Blender → `Edit` → `Preferences` → `Add-ons`
+   - Click `Install...` and select the downloaded `.zip` file
+   - Enable the **BlenderExec Bridge** addon
+
+> 📥 **Latest Release**: [VSCode Release](https://github.com/MCUnderground/BlenderExec/releases/latest)  
+> 🔗 **Source Code**: [BlenderExec Bridge](https://github.com/MCUnderground/BlenderExec/tree/main/BlenderExec%20Bridge)  
 
 ---
 
