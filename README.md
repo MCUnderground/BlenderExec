@@ -118,4 +118,4 @@ BlenderExec wouldn’t exist without their incredible work. 💙
 
 ## 📷 Icon
 
-![BlenderExec Icon](images/icon.png)
+![BlenderExec Icon](blenderexec/images/icon.png)
