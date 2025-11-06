@@ -115,7 +115,8 @@ To send code from VS Code to Blender, you need to install the BlenderExec Bridge
    - Click `Install...` and select the downloaded `.zip` file
    - Enable the **BlenderExec Bridge** addon
 
-> 📥 **Latest Release**: [VSCode Release](https://github.com/MCUnderground/BlenderExec/releases/latest)  
+> 📥 **Latest Release**: [Release](https://github.com/MCUnderground/BlenderExec/releases/latest)  
+> 🏪 **VS Code Marketplace**: [BlenderExec Extension](https://marketplace.visualstudio.com/items?itemName=MCUnderground.blenderexec)  
 > 🔗 **Source Code**: [BlenderExec Bridge](https://github.com/MCUnderground/BlenderExec/tree/main/BlenderExec%20Bridge)  
 
 ---
