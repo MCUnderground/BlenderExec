@@ -1,7 +1,7 @@
 bl_info = {
     "name": "BlenderExec Bridge",
     "author": "MCUnderground",
-    "version": (1, 0),
+    "version": (1, 4),
     "blender": (4, 4, 3),
     "location": "Text Editor > Tools",
     "description": "Receive Python code from VS Code",
@@ -19,8 +19,11 @@ import bpy
 APPDATA = os.path.join(os.path.expanduser("~"), ".blenderexec")
 os.makedirs(APPDATA, exist_ok=True)
 INSTANCES_FILE = os.path.join(APPDATA, "instances.json")
+
 port = None  # Assigned later
 _server_thread = None
+_last_filepath = None  # Track name changes
+
 
 # --- Helper Functions ---
 def find_free_port():
@@ -30,11 +33,12 @@ def find_free_port():
     s.close()
     return port_num
 
+
 def update_instance_title(dummy=None):
     """Update this Blender instance in the instances.json file."""
     global port
+
     try:
-        # Use the filename of the current Blender file, fallback to Untitled
         title = "Untitled"
         if bpy.data.filepath:
             title = os.path.basename(bpy.data.filepath)
@@ -43,6 +47,7 @@ def update_instance_title(dummy=None):
 
     instance = {"title": title, "port": port}
 
+    # Load current list
     try:
         if os.path.exists(INSTANCES_FILE):
             with open(INSTANCES_FILE, "r") as f:
@@ -52,7 +57,7 @@ def update_instance_title(dummy=None):
     except Exception:
         instances = []
 
-    # Update or append this instance
+    # Replace this instance entry
     instances = [i for i in instances if i.get("port") != port]
     instances.append(instance)
 
@@ -67,7 +72,6 @@ def remove_instance():
         if os.path.exists(INSTANCES_FILE):
             with open(INSTANCES_FILE, "r") as f:
                 instances = json.load(f)
-            # Remove the entry with this port
             instances = [i for i in instances if i.get("port") != port]
             with open(INSTANCES_FILE, "w") as f:
                 json.dump(instances, f)
@@ -87,7 +91,8 @@ def server_thread():
         data = b""
         while True:
             packet = conn.recv(4096)
-            if not packet: break
+            if not packet:
+                break
             data += packet
         try:
             exec(data.decode(), globals(), globals())
@@ -95,25 +100,50 @@ def server_thread():
             print(f"[BlenderExec] Error executing code: {e}")
         conn.close()
 
+
+# --- Handlers ---
+def check_filename_change(scene=None):
+    """Handler: detect file name changes and update instance list."""
+    global _last_filepath
+    current_path = bpy.data.filepath
+    if current_path != _last_filepath:
+        _last_filepath = current_path
+        update_instance_title()
+
+
 # --- Register / Unregister ---
 def deferred_start(dummy=None):
-    """Start the TCP server and register instance after Blender is ready."""
-    global port, _server_thread
+    """Start TCP server and register instance after Blender is ready."""
+    global port, _server_thread, _last_filepath
     port = find_free_port()
+    _last_filepath = bpy.data.filepath
     update_instance_title()
+
     _server_thread = threading.Thread(target=server_thread, daemon=True)
     _server_thread.start()
 
+
 def register():
+    # Start after Blender UI is ready
     bpy.app.timers.register(deferred_start, first_interval=0.1)
+
+    # Update title when saving/loading
     bpy.app.handlers.save_post.append(update_instance_title)
     bpy.app.handlers.load_post.append(update_instance_title)
-    # Register atexit for instance removal
+
+    # Detect filename change dynamically
+    bpy.app.handlers.depsgraph_update_post.append(check_filename_change)
+
+    # Clean up on exit
     atexit.register(remove_instance)
+
 
 def unregister():
     remove_instance()
-    if update_instance_title in bpy.app.handlers.save_post:
-        bpy.app.handlers.save_post.remove(update_instance_title)
-    if update_instance_title in bpy.app.handlers.load_post:
-        bpy.app.handlers.load_post.remove(update_instance_title)
+    for handler_list, fn in [
+        (bpy.app.handlers.save_post, update_instance_title),
+        (bpy.app.handlers.load_post, update_instance_title),
+        (bpy.app.handlers.depsgraph_update_post, check_filename_change),
+    ]:
+        if fn in handler_list:
+            handler_list.remove(fn)

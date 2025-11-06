@@ -55,8 +55,19 @@ function sendCodeToBlender(code) {
             client.end();
             resolve();
         });
+        // <-- This is where the error handler goes -->
         client.on('error', (err) => {
             vscode.window.showErrorMessage('Failed to send code to Blender: ' + err.message);
+            // Auto-remove dead instance
+            const file = path.join(os.homedir(), '.blenderexec', 'instances.json');
+            if (fs.existsSync(file) && selectedInstance) {
+                try {
+                    let list = JSON.parse(fs.readFileSync(file, 'utf-8'));
+                    list = list.filter(i => i.port !== selectedInstance.port);
+                    fs.writeFileSync(file, JSON.stringify(list, null, 2));
+                }
+                catch { }
+            }
             reject(err);
         });
     });
@@ -67,13 +78,40 @@ async function selectInstanceCommand() {
         vscode.window.showErrorMessage('No Blender instances found!');
         return;
     }
-    let instances = JSON.parse(fs.readFileSync(file, 'utf-8'));
-    instances = instances.filter(i => i.port && !isNaN(i.port));
-    if (instances.length === 0) {
-        vscode.window.showErrorMessage('No valid Blender instances found!');
+    let instances = [];
+    try {
+        instances = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    }
+    catch {
+        vscode.window.showErrorMessage('Failed to read instances.json');
         return;
     }
-    const picked = await vscode.window.showQuickPick(instances.map(i => ({ label: i.title, description: i.port.toString() })), { placeHolder: 'Select Blender instance' });
+    instances = instances.filter(i => i.port && !isNaN(i.port));
+    // --- Check which instances are still alive ---
+    const alive = [];
+    for (const inst of instances) {
+        const socket = new net.Socket();
+        const isAlive = await new Promise((resolve) => {
+            socket.setTimeout(250);
+            socket.once('error', () => resolve(false));
+            socket.once('timeout', () => resolve(false));
+            socket.connect(inst.port, '127.0.0.1', () => {
+                socket.end();
+                resolve(true);
+            });
+        });
+        if (isAlive)
+            alive.push(inst);
+    }
+    // --- Save cleaned list ---
+    if (alive.length !== instances.length) {
+        fs.writeFileSync(file, JSON.stringify(alive, null, 2));
+    }
+    if (alive.length === 0) {
+        vscode.window.showErrorMessage('No active Blender instances found!');
+        return;
+    }
+    const picked = await vscode.window.showQuickPick(alive.map(i => ({ label: i.title, description: i.port.toString() })), { placeHolder: 'Select Blender instance' });
     if (!picked)
         return;
     selectedInstance = { host: '127.0.0.1', port: parseInt(picked.description) };

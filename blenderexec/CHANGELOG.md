@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.4] - 2025-11-06
+
+### 🔧 Stability & Improvements
+- 🛡️ **Enhanced Error Handling**: Improved error handling and connection stability in VS Code extension
+- 🧹 **Dead Instance Cleanup**: Automatic removal of disconnected Blender instances from instance list
+- 🔄 **Instance Detection**: Better validation of active Blender instances with connection testing
+- 📡 **Bridge Updates**: Updated BlenderExec Bridge addon to version 1.4 with improved reliability
+- 🏷️ **Dynamic Title Updates**: Real-time filename detection and instance title updates in Blender
+- 🧪 **Connection Validation**: Added timeout and error handling for more robust instance selection
+
+---
+
 ## [1.0.3] - 2025-11-06
 
 ### 📝 Documentation
