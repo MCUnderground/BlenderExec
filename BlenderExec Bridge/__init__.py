@@ -14,6 +14,7 @@ import json
 import os
 import atexit
 import bpy
+import traceback
 
 # --- Paths & Globals ---
 APPDATA = os.path.join(os.path.expanduser("~"), ".blenderexec")
@@ -79,25 +80,41 @@ def remove_instance():
         pass
 
 
-# --- TCP Server ---
+def execute_user_code_on_main_thread(user_code):
+    def _runner():
+        exec(user_code, globals(), globals())
+        return None 
+    bpy.app.timers.register(_runner, first_interval=0.0)
+
 def server_thread():
     global port
+
     s = socket.socket()
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind(("localhost", port))
     s.listen(1)
     print(f"[BlenderExec] Listening on port {port}")
+
     while True:
-        conn, _ = s.accept()
+        conn, addr = s.accept()
+        print(f"[BlenderExec] Connection from {addr}")
         data = b""
         while True:
             packet = conn.recv(4096)
             if not packet:
                 break
             data += packet
+        if not data:
+            conn.close()
+            continue
+
         try:
-            exec(data.decode(), globals(), globals())
-        except Exception as e:
-            print(f"[BlenderExec] Error executing code: {e}")
+            user_code = data.decode("utf8")
+            execute_user_code_on_main_thread(user_code)
+        except Exception:
+            print("[BlenderExec] Fatal error processing connection:")
+            print(traceback.format_exc())
+
         conn.close()
 
 
